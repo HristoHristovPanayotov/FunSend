@@ -1,0 +1,25 @@
+## .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+coverage*.xml
+coverage*.json
+*.coverage
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## Local configuration and secrets
+appsettings.Development.local.json
+*.db
+*.mdf
+*.ldf
+
+## Uploaded media (never committed)
+src/FunSend.Web/wwwroot/uploads/
