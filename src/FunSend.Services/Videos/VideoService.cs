@@ -2,6 +2,7 @@ using FunSend.Data;
 using FunSend.Data.Entities;
 using FunSend.Data.Enums;
 using FunSend.Services.Common;
+using FunSend.Services.Notifications;
 using FunSend.Services.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,17 +18,20 @@ public class VideoService : IVideoService
     private readonly FunSendDbContext _db;
     private readonly IVideoStorage _storage;
     private readonly IVideoUploadValidator _validator;
+    private readonly INotificationService _notifications;
     private readonly ILogger<VideoService> _logger;
 
     public VideoService(
         FunSendDbContext db,
         IVideoStorage storage,
         IVideoUploadValidator validator,
+        INotificationService notifications,
         ILogger<VideoService> logger)
     {
         _db = db;
         _storage = storage;
         _validator = validator;
+        _notifications = notifications;
         _logger = logger;
     }
 
@@ -290,13 +294,14 @@ public class VideoService : IVideoService
             return ServiceResult<LikeOutcome>.Forbidden("Sign in to like a video.");
         }
 
-        var visible = await _db.Videos
+        var video = await _db.Videos
             .AsNoTracking()
             .Where(v => v.Id == videoId)
             .VisibleTo(_db, userId)
-            .AnyAsync(cancellationToken);
+            .Select(v => new { v.Id, v.Title, v.UserId })
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (!visible)
+        if (video is null)
         {
             return ServiceResult<LikeOutcome>.NotFound("The video does not exist or is not available to you.");
         }
@@ -324,6 +329,23 @@ public class VideoService : IVideoService
         }
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        // Only a new like is worth telling the author about; taking one back is not.
+        if (likedByViewer)
+        {
+            var likerName = await _db.Users
+                .Where(u => u.Id == userId)
+                .Select(u => u.DisplayName)
+                .FirstOrDefaultAsync(cancellationToken) ?? "Someone";
+
+            await _notifications.NotifyAsync(
+                video.UserId,
+                NotificationType.VideoLiked,
+                $"{likerName} liked your video \"{video.Title}\".",
+                userId,
+                video.Id,
+                cancellationToken);
+        }
 
         var likeCount = await _db.Likes.CountAsync(l => l.VideoId == videoId, cancellationToken);
 
@@ -389,6 +411,14 @@ public class VideoService : IVideoService
         }
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        await _notifications.NotifyAsync(
+            video.UserId,
+            NotificationType.VideoRemoved,
+            $"Your video \"{video.Title}\" was taken down by a moderator. Reason: {reason}",
+            actorId: null,
+            videoId: video.Id,
+            cancellationToken);
 
         _logger.LogInformation(
             "Moderator {ModeratorId} took video {VideoId} down: {Reason}",
