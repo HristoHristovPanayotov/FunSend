@@ -1,0 +1,101 @@
+@using FunSend.Services.Notifications
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject INotificationService Notifications
+@{
+    var signedIn = SignInManager.IsSignedIn(User);
+    var currentUserId = signedIn ? UserManager.GetUserId(User) : null;
+    var unread = currentUserId is null
+        ? 0
+        : await Notifications.GetUnreadCountAsync(currentUserId);
+    var isAdmin = User.IsInRole(RoleNames.Admin);
+    var isCreator = User.IsInRole(RoleNames.Creator) || isAdmin;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] &middot; FunSend</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="site-nav">
+            <a class="brand" asp-controller="Home" asp-action="Index">FunSend</a>
+
+            <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="nav-links">
+                <li><a asp-controller="Home" asp-action="Index">Feed</a></li>
+                @if (signedIn)
+                {
+                    <li><a asp-controller="Home" asp-action="Following">Following</a></li>
+                    <li><a asp-controller="Videos" asp-action="Saved">Saved</a></li>
+                }
+                <li><a asp-controller="Videos" asp-action="Search">Search</a></li>
+                @if (isCreator)
+                {
+                    <li><a asp-controller="Videos" asp-action="Upload">Upload</a></li>
+                }
+                @if (isAdmin)
+                {
+                    <li><a asp-controller="Admin" asp-action="Index">Dashboard</a></li>
+                }
+            </ul>
+
+            <ul class="nav-account">
+                @if (signedIn)
+                {
+                    <li>
+                        <a asp-controller="Notifications" asp-action="Index">
+                            Notifications
+                            @if (unread > 0)
+                            {
+                                <span class="badge">@unread</span>
+                            }
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Profile" asp-action="Index" asp-route-id="@currentUserId">
+                            @User.Identity?.Name
+                        </a>
+                    </li>
+                    <li>
+                        <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                            <button class="link-button" type="submit">Sign out</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li><a asp-area="Identity" asp-page="/Account/Login">Sign in</a></li>
+                    <li><a class="button small" asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                }
+            </ul>
+        </nav>
+    </header>
+
+    <main class="site-main">
+        @if (TempData["Success"] is string success)
+        {
+            <p class="alert alert-success" role="status">@success</p>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <p class="alert alert-error" role="alert">@error</p>
+        }
+
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <p>FunSend &middot; diploma project &middot; @DateTime.UtcNow.Year</p>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
