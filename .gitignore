@@ -22,5 +22,5 @@ appsettings.Development.local.json
 *.ldf
 
 ## Uploaded media (never committed, but the folder has to exist)
-src/FunSend.Web/wwwroot/uploads/*
-!src/FunSend.Web/wwwroot/uploads/.gitkeep
+src/FunSend.Web/App_Data/*
+!src/FunSend.Web/App_Data/.gitkeep

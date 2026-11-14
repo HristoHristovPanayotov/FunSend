@@ -1,0 +1,116 @@
+@model VideoDetailsViewModel
+@{
+    var video = Model.Video;
+    ViewData["Title"] = video.Title;
+}
+
+<article class="player">
+    <div>
+        <video controls preload="metadata" playsinline
+               src="@Url.Action("Stream", "Videos", new { id = video.Id })"></video>
+
+        <h1>@video.Title</h1>
+
+        <div class="video-meta">
+            <span>@video.ViewCount views</span>
+            <span>@video.LikeCount likes</span>
+            <span>@video.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+            <span class="pill">@video.CategoryName</span>
+            @if (video.Visibility != VideoVisibility.Public)
+            {
+                <span class="pill">@video.Visibility</span>
+            }
+            @if (video.Status == VideoStatus.Removed)
+            {
+                <span class="pill">taken down by a moderator</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(video.Description))
+        {
+            <p>@video.Description</p>
+        }
+
+        @if (video.Hashtags.Count > 0)
+        {
+            <p>
+                @foreach (var tag in video.Hashtags)
+                {
+                    <a class="pill" asp-controller="Videos" asp-action="Search" asp-route-hashtag="@tag">#@tag</a>
+                }
+            </p>
+        }
+
+        @if (Model.ViewerIsSignedIn)
+        {
+            <div class="player-actions">
+                <form asp-controller="Videos" asp-action="Like" asp-route-id="@video.Id" method="post">
+                    <button class="button" type="submit">
+                        @(video.LikedByViewer ? "Unlike" : "Like") (@video.LikeCount)
+                    </button>
+                </form>
+
+                <form asp-controller="Videos" asp-action="Save" asp-route-id="@video.Id" method="post">
+                    <button class="button secondary" type="submit">
+                        @(video.SavedByViewer ? "Remove from saved" : "Save for later")
+                    </button>
+                </form>
+
+                @if (video.ViewerCanDelete)
+                {
+                    <form asp-controller="Videos" asp-action="Delete" asp-route-id="@video.Id" method="post"
+                          onsubmit="return confirm('Delete this video for good?');">
+                        <button class="button secondary" type="submit">Delete</button>
+                    </form>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="muted">
+                <a asp-area="Identity" asp-page="/Account/Login">Sign in</a>
+                to like, save or follow.
+            </p>
+        }
+
+        @if (Model.ViewerIsAdmin && video.Status != VideoStatus.Removed)
+        {
+            <form class="form-card" asp-controller="Admin" asp-action="RemoveVideo" method="post">
+                <input type="hidden" name="VideoId" value="@video.Id" />
+                <h2>Take this video down</h2>
+                <div class="field">
+                    <label for="Reason">Reason</label>
+                    <input id="Reason" name="Reason" maxlength="200" required />
+                    <span class="field-hint">The author is notified with this text.</span>
+                </div>
+                <button class="button" type="submit">Take down</button>
+            </form>
+        }
+    </div>
+
+    <aside>
+        <h2>Author</h2>
+        <div class="profile-header">
+            <div>
+                <p>
+                    <a asp-controller="Profile" asp-action="Index" asp-route-id="@video.AuthorId">
+                        @video.AuthorDisplayName
+                    </a>
+                </p>
+                @if (Model.ViewerIsSignedIn && video.AuthorId != null)
+                {
+                    <form asp-controller="Profile" asp-action="Follow" asp-route-id="@video.AuthorId" method="post">
+                        <button class="button small" type="submit">
+                            @(video.ViewerFollowsAuthor ? "Unfollow" : "Follow")
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+
+        <p class="muted">
+            Comments arrive in the next stage of the project, together with the
+            social features from the plan.
+        </p>
+    </aside>
+</article>

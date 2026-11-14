@@ -1,0 +1,152 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var stats = Model.Statistics;
+    var peak = Model.PeakDailyViews;
+}
+
+<h1>Dashboard</h1>
+
+<section class="stat-cards">
+    <div class="stat-card">
+        <span class="value">@stats.UserCount</span>
+        <span class="label">users (@stats.BlockedUserCount blocked)</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.VideoCount</span>
+        <span class="label">videos (@stats.RemovedVideoCount taken down)</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.ViewCount</span>
+        <span class="label">views in total</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.ViewsLast7Days</span>
+        <span class="label">views in the last 7 days</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.LikeCount</span>
+        <span class="label">likes</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.CommentCount</span>
+        <span class="label">comments</span>
+    </div>
+    <div class="stat-card">
+        <span class="value">@stats.PendingReportCount</span>
+        <span class="label">reports waiting</span>
+    </div>
+</section>
+
+<h2>Views per day</h2>
+
+@if (peak == 0)
+{
+    <p class="muted">No views recorded yet.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data">
+            <caption class="muted">The last @Model.ViewsPerDay.Count days.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col">Views</th>
+                    <th scope="col">Share of the busiest day</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var day in Model.ViewsPerDay)
+                {
+                    var share = peak == 0 ? 0 : (int)Math.Round(day.Views * 100d / peak);
+                    <tr>
+                        <td>@day.Day.ToString("dd.MM")</td>
+                        <td>@day.Views</td>
+                        <td>
+                            <span aria-hidden="true">@(new string('=', Math.Max(share / 5, 0)))</span>
+                            <span class="muted">@share%</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<h2>Most watched</h2>
+
+@if (Model.MostWatched.Count == 0)
+{
+    <p class="muted">No videos yet.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th scope="col">Video</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Views</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var video in Model.MostWatched)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Videos" asp-action="Details" asp-route-id="@video.VideoId">
+                                @video.Title
+                            </a>
+                        </td>
+                        <td>@video.AuthorDisplayName</td>
+                        <td>@video.Views</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<h2>Most active authors</h2>
+
+@if (Model.MostActiveCreators.Count == 0)
+{
+    <p class="muted">Nobody has uploaded anything yet.</p>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data">
+            <thead>
+                <tr>
+                    <th scope="col">Author</th>
+                    <th scope="col">Videos</th>
+                    <th scope="col">Views</th>
+                    <th scope="col">Likes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var creator in Model.MostActiveCreators)
+                {
+                    <tr>
+                        <td>
+                            <a asp-controller="Profile" asp-action="Index" asp-route-id="@creator.UserId">
+                                @creator.DisplayName
+                            </a>
+                        </td>
+                        <td>@creator.Videos</td>
+                        <td>@creator.Views</td>
+                        <td>@creator.Likes</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<p class="muted">
+    The report queue and the comment moderation screens arrive in the stage due
+    26.03.2027; the counters above already read the Reports table.
+</p>

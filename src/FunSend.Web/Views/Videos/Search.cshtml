@@ -1,0 +1,73 @@
+@model SearchViewModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Search</h1>
+
+<form class="form-card" asp-controller="Videos" asp-action="Search" method="get">
+    <div class="field">
+        <label asp-for="Term"></label>
+        <input asp-for="Term" />
+        <span asp-validation-for="Term" class="text-danger"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId">
+            <option value="">Any category</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="field">
+        <label asp-for="Hashtag"></label>
+        <input asp-for="Hashtag" placeholder="skate" />
+        <span asp-validation-for="Hashtag" class="text-danger"></span>
+    </div>
+
+    <button class="button" type="submit">Search</button>
+</form>
+
+@if (Model.Results is not null)
+{
+    <h2>@Model.Results.TotalCount results</h2>
+
+    @if (Model.Results.Items.Count == 0)
+    {
+        <p class="muted">Nothing matched. Try a different word, category or tag.</p>
+    }
+    else
+    {
+        <ul class="video-grid">
+            @foreach (var video in Model.Results.Items)
+            {
+                <partial name="_VideoCard" model="video" />
+            }
+        </ul>
+
+        <partial name="_Pager" model="@(new FeedViewModel
+        {
+            Videos = Model.Results,
+            PagerController = "Videos",
+            PagerAction = "Search",
+            PagerRouteValues = new Dictionary<string, string?>
+            {
+                ["term"] = Model.Term,
+                ["categoryId"] = Model.CategoryId?.ToString(),
+                ["hashtag"] = Model.Hashtag
+            }
+        })" />
+    }
+}
+else
+{
+    <p class="muted">Search by a word in the title, by category or by tag.</p>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

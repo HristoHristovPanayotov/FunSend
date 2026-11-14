@@ -1,0 +1,86 @@
+@model ProfileViewModel
+@{
+    var profile = Model.Profile;
+    ViewData["Title"] = profile.DisplayName;
+}
+
+<section class="profile-header">
+    @if (!string.IsNullOrEmpty(profile.AvatarFileName))
+    {
+        <img class="avatar" src="~/uploads/avatars/@profile.AvatarFileName" alt="" />
+    }
+    else
+    {
+        <div class="avatar" aria-hidden="true"></div>
+    }
+
+    <div>
+        <h1>@profile.DisplayName</h1>
+
+        @if (!string.IsNullOrWhiteSpace(profile.Bio))
+        {
+            <p>@profile.Bio</p>
+        }
+
+        <div class="stat-row">
+            <span>@profile.VideoCount videos</span>
+            <span>@profile.FollowerCount followers</span>
+            <span>@profile.FollowingCount following</span>
+            <span>@profile.TotalLikes likes received</span>
+            <span>joined @profile.CreatedAt.ToString("MM.yyyy")</span>
+        </div>
+
+        @if (profile.IsBlocked)
+        {
+            <p class="text-danger">This account is blocked.</p>
+        }
+    </div>
+
+    <div>
+        @if (Model.ViewerIsSignedIn && !profile.IsOwnProfile)
+        {
+            <form asp-controller="Profile" asp-action="Follow" asp-route-id="@profile.UserId" method="post">
+                <button class="button" type="submit">
+                    @(profile.ViewerFollows ? "Unfollow" : "Follow")
+                </button>
+            </form>
+        }
+
+        @if (Model.ViewerIsAdmin && !profile.IsOwnProfile)
+        {
+            <form asp-controller="Admin" asp-action="ToggleBlock" asp-route-id="@profile.UserId" method="post">
+                <button class="button secondary small" type="submit">
+                    @(profile.IsBlocked ? "Unblock" : "Block")
+                </button>
+            </form>
+        }
+    </div>
+</section>
+
+<h2>Videos</h2>
+
+@if (Model.Videos.Items.Count == 0)
+{
+    <p class="muted">
+        @(profile.IsOwnProfile
+            ? "You have not uploaded anything yet."
+            : "This author has no videos you can see.")
+    </p>
+}
+else
+{
+    <ul class="video-grid">
+        @foreach (var video in Model.Videos.Items)
+        {
+            <partial name="_VideoCard" model="video" />
+        }
+    </ul>
+
+    <partial name="_Pager" model="@(new FeedViewModel
+    {
+        Videos = Model.Videos,
+        PagerController = "Profile",
+        PagerAction = "Index",
+        PagerRouteValues = new Dictionary<string, string?> { ["id"] = profile.UserId }
+    })" />
+}

@@ -11,8 +11,12 @@ public class LocalVideoStorageOptions
     /// <summary>
     /// Folder the files are written to. A relative path is resolved against the
     /// content root of the application.
+    ///
+    /// The default is outside wwwroot on purpose: a video is served by the
+    /// controller, which checks the visibility rule first, so a private video
+    /// cannot be fetched with a direct link to a static file.
     /// </summary>
-    public string RootPath { get; set; } = Path.Combine("wwwroot", "uploads", "videos");
+    public string RootPath { get; set; } = Path.Combine("App_Data", "videos");
 }
 
 /// <summary>
