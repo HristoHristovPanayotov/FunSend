@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, 'feature/**' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore FunSend.sln
+
+      - name: Build
+        run: dotnet build FunSend.sln --configuration Release --no-restore
+
+      - name: Test with coverage
+        run: >
+          dotnet test FunSend.sln
+          --configuration Release
+          --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+          --collect:"XPlat Code Coverage"
+          --settings tests/FunSend.Tests/coverlet.runsettings
+
+      - name: Report the coverage of the business layer
+        if: always()
+        run: |
+          report=$(find TestResults -name 'coverage.cobertura.xml' | head -1)
+
+          if [ -z "$report" ]; then
+            echo "No coverage report was produced."
+            exit 1
+          fi
+
+          python3 - "$report" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+
+          threshold = 65.0
+          root = ET.parse(sys.argv[1]).getroot()
+
+          for package in root.iter('package'):
+              if package.get('name') != 'FunSend.Services':
+                  continue
+
+              covered = total = 0
+              for line in package.iter('line'):
+                  total += 1
+                  covered += int(line.get('hits')) > 0
+
+              percent = covered * 100 / total if total else 0
+              print(f'FunSend.Services line coverage: {percent:.1f}% ({covered}/{total})')
+
+              if percent < threshold:
+                  sys.exit(f'Below the {threshold:.0f}% the project commits to.')
+              break
+          else:
+              sys.exit('FunSend.Services was not found in the coverage report.')
+          PY
+
+      - name: Keep the test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults
+          if-no-files-found: ignore
