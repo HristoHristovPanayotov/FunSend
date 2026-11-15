@@ -1,0 +1,31 @@
+@model FeedViewModel
+@{
+    // Not called "page": @page is a Razor directive, so the name cannot be used
+    // in an expression like @page.Page inside the markup below.
+    var pager = Model.Videos;
+}
+
+@if (pager.TotalPages > 1)
+{
+    <nav class="pager" aria-label="Pages">
+        @if (pager.HasPrevious)
+        {
+            <a class="button secondary small"
+               asp-controller="@Model.PagerController"
+               asp-action="@Model.PagerAction"
+               asp-all-route-data="Model.PagerRouteValues"
+               asp-route-page="@(pager.Page - 1)">Previous</a>
+        }
+
+        <span class="muted">Page @pager.Page of @pager.TotalPages</span>
+
+        @if (pager.HasNext)
+        {
+            <a class="button secondary small"
+               asp-controller="@Model.PagerController"
+               asp-action="@Model.PagerAction"
+               asp-all-route-data="Model.PagerRouteValues"
+               asp-route-page="@(pager.Page + 1)">Next</a>
+        }
+    </nav>
+}

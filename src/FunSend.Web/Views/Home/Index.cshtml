@@ -1,0 +1,26 @@
+@model FeedViewModel
+@{
+    ViewData["Title"] = Model.Heading;
+}
+
+<h1>@Model.Heading</h1>
+@if (!string.IsNullOrEmpty(Model.Subheading))
+{
+    <p class="muted">@Model.Subheading</p>
+}
+
+@if (Model.Videos.Items.Count == 0)
+{
+    <p class="muted">@Model.EmptyMessage</p>
+}
+else
+{
+    <ul class="video-grid">
+        @foreach (var video in Model.Videos.Items)
+        {
+            <partial name="_VideoCard" model="video" />
+        }
+    </ul>
+
+    <partial name="_Pager" model="Model" />
+}

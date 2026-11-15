@@ -1,0 +1,70 @@
+@model VideoUploadViewModel
+@{
+    ViewData["Title"] = "Upload a video";
+}
+
+<h1>Upload a video</h1>
+<p class="muted">
+    Up to @Model.MaxFileSizeMegabytes.ToString("0") MB and
+    @Model.MaxDurationSeconds seconds. Allowed formats: @Model.AllowedExtensions.
+</p>
+
+<form class="form-card" asp-controller="Videos" asp-action="Upload" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+    <div class="field">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId">
+            <option value="">Choose a category</option>
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Visibility"></label>
+        <select asp-for="Visibility" asp-items="Html.GetEnumSelectList<VideoVisibility>()"></select>
+        <span class="field-hint">
+            Public is visible to everyone, FollowersOnly to the people who follow
+            you, Private only to you.
+        </span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Hashtags"></label>
+        <input asp-for="Hashtags" placeholder="funny, skate, cats" />
+        <span class="field-hint">Separated by commas or spaces, at most ten.</span>
+        <span asp-validation-for="Hashtags" class="text-danger"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="File"></label>
+        <input asp-for="File" type="file" accept="video/mp4,video/webm,video/quicktime" data-video-input />
+        <span class="field-hint" data-duration-note>The length is read from the file you choose.</span>
+        <span asp-validation-for="File" class="text-danger"></span>
+    </div>
+
+    <input asp-for="DurationSeconds" type="hidden" data-video-duration />
+    <span asp-validation-for="DurationSeconds" class="text-danger"></span>
+
+    <button class="button" type="submit">Upload</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

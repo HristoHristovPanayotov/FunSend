@@ -1,0 +1,17 @@
+@model string
+@{
+    ViewData["Title"] = "Page not found";
+}
+
+<section class="error-page">
+    <p class="error-code">404</p>
+    <h1>We could not find that page</h1>
+    <p class="muted">
+        The address may be mistyped, or the video may have been taken down.
+    </p>
+    @if (!string.IsNullOrEmpty(Model))
+    {
+        <p class="muted">Requested address: <code>@Model</code></p>
+    }
+    <a class="button" asp-controller="Home" asp-action="Index">Back to the feed</a>
+</section>

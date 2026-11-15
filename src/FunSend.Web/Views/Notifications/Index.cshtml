@@ -1,0 +1,81 @@
+@model NotificationsViewModel
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<h1>Notifications</h1>
+<p class="muted">@Model.UnreadCount unread</p>
+
+<div class="player-actions">
+    <a class="button secondary small" asp-action="Index" asp-route-unreadOnly="false">All</a>
+    <a class="button secondary small" asp-action="Index" asp-route-unreadOnly="true">Unread only</a>
+
+    @if (Model.UnreadCount > 0)
+    {
+        <form asp-action="MarkAllRead" method="post">
+            <button class="button small" type="submit">Mark all as read</button>
+        </form>
+    }
+</div>
+
+@if (Model.Notifications.Items.Count == 0)
+{
+    <p class="muted">Nothing here yet.</p>
+}
+else
+{
+    <ul class="notification-list">
+        @foreach (var notification in Model.Notifications.Items)
+        {
+            <li class="notification @(notification.IsRead ? "" : "unread")">
+                <p>@notification.Message</p>
+
+                <div class="video-meta">
+                    <span>@notification.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+
+                    @if (notification.VideoId is int videoId)
+                    {
+                        <a asp-controller="Videos" asp-action="Details" asp-route-id="@videoId">
+                            @(notification.VideoTitle ?? "Open the video")
+                        </a>
+                    }
+
+                    @if (notification.ActorId is not null)
+                    {
+                        <a asp-controller="Profile" asp-action="Index" asp-route-id="@notification.ActorId">
+                            @notification.ActorDisplayName
+                        </a>
+                    }
+
+                    @if (!notification.IsRead)
+                    {
+                        <form asp-action="MarkRead" asp-route-id="@notification.Id" method="post">
+                            <button class="link-button" type="submit">Mark as read</button>
+                        </form>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+
+    @if (Model.Notifications.TotalPages > 1)
+    {
+        <nav class="pager" aria-label="Pages">
+            @if (Model.Notifications.HasPrevious)
+            {
+                <a class="button secondary small" asp-action="Index"
+                   asp-route-unreadOnly="@Model.UnreadOnly"
+                   asp-route-page="@(Model.Notifications.Page - 1)">Previous</a>
+            }
+
+            <span class="muted">Page @Model.Notifications.Page of @Model.Notifications.TotalPages</span>
+
+            @if (Model.Notifications.HasNext)
+            {
+                <a class="button secondary small" asp-action="Index"
+                   asp-route-unreadOnly="@Model.UnreadOnly"
+                   asp-route-page="@(Model.Notifications.Page + 1)">Next</a>
+            }
+        </nav>
+    }
+}

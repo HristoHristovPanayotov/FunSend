@@ -1,0 +1,29 @@
+@using FunSend.Services.Videos
+@model VideoListItem
+
+<li class="video-card">
+    <a asp-controller="Videos" asp-action="Details" asp-route-id="@Model.Id">
+        <video class="thumb" preload="metadata" muted playsinline
+               src="@Url.Action("Stream", "Videos", new { id = Model.Id })#t=0.1"></video>
+    </a>
+    <div class="video-card-body">
+        <h3>
+            <a asp-controller="Videos" asp-action="Details" asp-route-id="@Model.Id">@Model.Title</a>
+        </h3>
+        <div class="video-meta">
+            <a asp-controller="Profile" asp-action="Index" asp-route-id="@Model.AuthorId">@Model.AuthorDisplayName</a>
+            <span class="pill">@Model.CategoryName</span>
+            <span>@Model.LikeCount likes</span>
+            <span>@Model.CommentCount comments</span>
+            <span>@Model.DurationSeconds s</span>
+            @if (Model.Visibility != VideoVisibility.Public)
+            {
+                <span class="pill">@Model.Visibility</span>
+            }
+            @if (Model.Status == VideoStatus.Removed)
+            {
+                <span class="pill">taken down</span>
+            }
+        </div>
+    </div>
+</li>
