@@ -6,9 +6,19 @@ Registered users upload short vertical videos; everybody else watches them in
 a continuous feed, likes them, follows the authors and reports what breaks the
 rules. Administrators moderate the content and read the statistics.
 
-The full design document (concept, research, database design and the plan up
-to the defence on 19.04.2027) is kept separately; this repository holds the
-code and the database.
+## Documentation
+
+The written part of the project lives in [`docs/`](docs/README.md), in
+Bulgarian, as the diploma requires:
+
+- [Увод](docs/01-uvod.md) — subject, concept, roles, goal, tasks, expected
+  results, scope of stage 1
+- [Глава 1. Проучвателна част](docs/02-prouchvatelna-chast.md) — the research
+  into TikTok, YouTube Shorts and Instagram Reels, and what follows from it
+- [Проект на базата данни](docs/database/README.md) — ER diagram and the
+  design decisions, with [schema.sql](docs/database/schema.sql) beside it
+
+The rest of this file describes the code: how it is built and how to run it.
 
 ## How it is put together
 
