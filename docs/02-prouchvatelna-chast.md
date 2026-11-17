@@ -17,15 +17,21 @@ TikTok, YouTube Shorts и Instagram Reels. Те са почти еднакви �
 
 | Платформа | Предимства | Недостатъци | Какво взема FunSend |
 | --- | --- | --- | --- |
-| TikTok | Бързо разпространение на нови автори; висока ангажираност ([Socialinsider](https://www.socialinsider.io/blog/youtube-shorts)) | Успехът зависи от тенденции и музика; затворена система за препоръки ([Shortsync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | Непрекъснат вертикален поток от видеа, лесно качване |
-| YouTube Shorts | Най-силно откриване чрез търсене и най-изгодна монетизация ([Shortsync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | По-слаби ефекти и редакция от TikTok и Reels ([MakeUseOf](https://www.makeuseof.com/tiktok-vs-instagram-reels-vs-youtube-shorts)) | Търсене по заглавие, категория и таг |
-| Instagram Reels | Работи най-добре с вече изградена общност от последователи ([Shortsync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | Ограничено откриване чрез търсене; няма видимост на ниво видео | Авторски профили, следване и видимост за последователите |
+| TikTok | Най-бързо разпространение на нови автори — алгоритъмът не зависи от броя последователи ([ShortSync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)); най-висока ангажираност: 2,60% средно през 2026 г. срещу 0,45% за Reels и 0,30% за Shorts ([Socialinsider](https://www.socialinsider.io/blog/youtube-shorts)) | Успехът зависи силно от тенденции и актуална музика ([ShortSync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | Непрекъснат вертикален поток от видеа, лесно качване |
+| YouTube Shorts | Най-силно откриване чрез търсене; заплащане на автора на база гледания чрез дял от рекламните приходи ([ShortSync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | По-ограничени ефекти и инструменти за редакция в сравнение с TikTok и Reels ([Socialinsider](https://www.socialinsider.io/blog/youtube-shorts), 2026; същото е отбелязано и от [MakeUseOf](https://www.makeuseof.com/tiktok-vs-instagram-reels-vs-youtube-shorts) още през 2022 г.) | Търсене по заглавие, категория и таг |
+| Instagram Reels | Работи най-добре с вече изградена общност от последователи; най-силна платформа за договори с марки ([ShortSync](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)) | Ограничено откриване чрез търсене; няма видимост на ниво отделно видео | Авторски профили, следване и видимост за последователите |
+
+> **За данните за ангажираност.** Методиката на Socialinsider включва
+> споделянията в процента за TikTok, но не и в този за Reels и Shorts, затова
+> трите стойности не са напълно съпоставими. Същият източник отбелязва, че
+> YouTube Shorts има най-висок среден брой гледания при всички размери на
+> аудиторията.
 
 Максималната дължина на видеата се различава според източника и често се
-променя (в различните сравнения за една и съща платформа се срещат стойности
-от 60 секунди до няколко минути), затова FunSend задава собствено
-ограничение, което се настройва в конфигурацията. В началната версия то е
-180 секунди и 100 МБ.
+променя. Например MakeUseOf посочва ограничение от 60 секунди за YouTube
+Shorts през 2022 г., докато по-новите сравнения дават други стойности. Затова
+FunSend задава собствено ограничение, което се настройва в конфигурацията. В
+началната версия то е 180 секунди и 100 МБ.
 
 ## 1.3. Обосновка на избраните функционалности
 
@@ -41,8 +47,10 @@ TikTok, YouTube Shorts и Instagram Reels. Те са почти еднакви �
 - **контрол на автора над видимостта** (Public, FollowersOnly, Private) —
   функция, която нито една от трите платформи не предлага на ниво отделно
   видео;
-- **пълна модерация със статистика** — отговор на затворените и непрозрачни
-  системи за препоръки и модерация при TikTok.
+- **пълна модерация със статистика** — трите платформи са затворени продукти и
+  не дават на разработчика достъп до вътрешната логика на препоръките и
+  модерацията, затова FunSend реализира собствена, видима модерация със
+  собствена статистика.
 
 Извън обхвата остават препоръчителни алгоритми, монетизация, предаване
 наживо, мобилно приложение и преобразуване на видеото в няколко качества.
@@ -69,20 +77,29 @@ TikTok, YouTube Shorts и Instagram Reels. Те са почти еднакви �
 
 ## Източници
 
-Използвани източници:
+| Източник | Дата на публикуване | Вид |
+| --- | --- | --- |
+| [ShortSync — YouTube Shorts vs TikTok vs Instagram Reels, пълно сравнение 2026](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026) | 31.03.2026, обновена 07.06.2026 | блог на производител на софтуер |
+| [Socialinsider — TikTok vs Reels vs Shorts: данни за ангажираността 2026](https://www.socialinsider.io/blog/youtube-shorts) | 05.08.2026, обновена 11.11.2026 | блог на производител на софтуер |
+| [Viberoll — спецификации за кратко видео](https://viberoll.questera.ai/learn/short-form-video-specs/) | обновена 30.07.2026 | блог на производител на софтуер |
+| [MakeUseOf — TikTok vs Instagram Reels vs YouTube Shorts](https://www.makeuseof.com/tiktok-vs-instagram-reels-vs-youtube-shorts) | 19.03.2022 | онлайн издание |
+| [Microsoft Learn — качване на файлове в ASP.NET Core](https://learn.microsoft.com/aspnet/core/mvc/models/file-uploads) | обновена 11.11.2026 | официална документация |
 
-- [Android Authority — TikTok vs YouTube Shorts vs Instagram Reels](https://www.androidauthority.com/tiktok-vs-youtube-shorts-vs-instagram-reels-3219063)
-- [Shortsync — YouTube Shorts vs TikTok vs Reels (2026)](https://www.shortsync.app/resources/youtube-shorts-vs-tiktok-vs-reels-2026)
-- [Socialinsider — YouTube Shorts](https://www.socialinsider.io/blog/youtube-shorts)
-- [MakeUseOf — TikTok vs Instagram Reels vs YouTube Shorts](https://www.makeuseof.com/tiktok-vs-instagram-reels-vs-youtube-shorts)
-- [Viberoll — Short-form video specs](https://viberoll.questera.ai/learn/short-form-video-specs/)
-- [Microsoft Learn — File uploads in ASP.NET Core](https://learn.microsoft.com/aspnet/core/mvc/models/file-uploads)
+### Бележка за проверката на източниците
 
-> **Бележка за проверка.** Данните са взети от резултатите от търсене на
-> 2026-11-15; страниците не са отваряни цялостно. Източниците трябва да се
-> проверят и при нужда да се заменят преди предаване на окончателния вариант.
+Всички посочени страници са отворени и проверени на 17.11.2026. Остават две
+слабости, които трябва да се имат предвид:
 
----
+1. Три от петте източника (ShortSync, Socialinsider, Viberoll) са блогове на
+   производители на софтуер за видео и съдържат реклама на собствените им
+   продукти. Данните от тях са използвани като отраслови, а не като
+   независими. Техническите спецификации (формат и резолюция) е добре да се
+   потвърдят от официалната документация на самите платформи преди предаване
+   на окончателния вариант.
+2. MakeUseOf е от 2022 г. и не описва състоянието през 2026 г., затова е
+   цитиран само с изрично посочване на годината и в съчетание с по-нов
+   източник.
 
-Предишна част: [Увод](01-uvod.md) · Следваща част:
-[Проект на базата данни](database/README.md)
+Шести източник — сравнителна статия на Android Authority, която по-рано беше
+посочена тук, — е премахнат: страницата връща грешка 403 и не може да бъде
+прочетена, затова твърденията от нея не са проверими.
